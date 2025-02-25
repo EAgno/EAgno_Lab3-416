@@ -2,13 +2,14 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    private int jumpCount = 0;
     public float moveSpeed = 5f;
     public float jumpForce = 6f;
     public float gravity = -9.81f;
     public Transform cameraTransform;
 
     private Rigidbody rb;
-    private bool isGrounded;
+    private bool isOnGround;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -56,15 +57,16 @@ public class PlayerController : MonoBehaviour
 
     void HandleJump()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if (Input.GetKeyDown(KeyCode.Space) && jumpCount < 2)
         {
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, rb.linearVelocity.z);
+            jumpCount++;
         }
     }
 
     void ApplyGravity()
     {
-        if (!isGrounded)
+        if (!isOnGround)
         {
             rb.linearVelocity += new Vector3(0, gravity * Time.fixedDeltaTime, 0);
         }
@@ -72,11 +74,12 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionStay(Collision collision)
     {
-        isGrounded = true;
+        isOnGround = true;
+        jumpCount = 0;
     }
 
     void OnCollisionExit(Collision collision)
     {
-        isGrounded = false;
+        isOnGround = false;
     }
 }

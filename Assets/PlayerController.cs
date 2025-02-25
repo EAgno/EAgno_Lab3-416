@@ -57,7 +57,7 @@ public class PlayerController : MonoBehaviour
 
     void HandleJump()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && jumpCount < 2)
+        if (Input.GetKeyDown(KeyCode.Space) && jumpCount < 1)
         {
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, rb.linearVelocity.z);
             jumpCount++;

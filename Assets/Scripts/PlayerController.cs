@@ -11,19 +11,24 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     private bool isOnGround;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public float dashMultiplier = 3f;
+    public float dashDuration = 0.5f;
+    public float dashCooldown = 1f;
+
+    private bool isDashing = false;
+    private float dashTimer = 0f;
+    private float dashCooldownTimer = 0f;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
 
-        // In case camera not found
         if (cameraTransform == null)
         {
             cameraTransform = Camera.main.transform;
         }
     }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
         MovePlayer();
@@ -33,6 +38,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         HandleJump();
+        HandleDash();
     }
 
     void MovePlayer()
@@ -47,12 +53,41 @@ public class PlayerController : MonoBehaviour
         forward.Normalize();
         right.Normalize();
 
-        // Direction based on camera orientation
         Vector3 moveDirection = (right * moveX + forward * moveZ).normalized;
 
-        // Apply velocity
-        Vector3 velocity = moveDirection * moveSpeed;
+        float currentSpeed = moveSpeed;
+
+        if (isDashing)
+        {
+            currentSpeed *= dashMultiplier;
+        }
+
+        Vector3 velocity = moveDirection * currentSpeed;
         rb.linearVelocity = new Vector3(velocity.x, rb.linearVelocity.y, velocity.z);
+    }
+
+    void HandleDash()
+    {
+        if (dashCooldownTimer > 0)
+        {
+            dashCooldownTimer -= Time.deltaTime;
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftShift) && dashCooldownTimer <= 0)
+        {
+            isDashing = true;
+            dashTimer = dashDuration;
+            dashCooldownTimer = dashCooldown;
+        }
+
+        if (isDashing)
+        {
+            dashTimer -= Time.deltaTime;
+            if (dashTimer <= 0)
+            {
+                isDashing = false;
+            }
+        }
     }
 
     void HandleJump()

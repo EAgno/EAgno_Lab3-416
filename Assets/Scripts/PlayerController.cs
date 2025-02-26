@@ -64,6 +64,13 @@ public class PlayerController : MonoBehaviour
 
         Vector3 velocity = moveDirection * currentSpeed;
         rb.linearVelocity = new Vector3(velocity.x, rb.linearVelocity.y, velocity.z);
+
+        // Rotate character with camera
+        if (moveDirection != Vector3.zero)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+        }
     }
 
     void HandleDash()
